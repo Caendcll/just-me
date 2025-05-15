@@ -1,0 +1,132 @@
+import java.util.*;
+
+abstract class Tarea {
+    protected String descripcion;
+    protected boolean completada;
+
+    public Tarea(String descripcion) {
+        this.descripcion = descripcion;
+        this.completada = false;
+    }
+
+    public void completar() {
+        this.completada = true;
+    }
+
+    public boolean estaCompletada() {
+        return completada;
+    }
+
+    public abstract void mostrar();
+}
+
+class TareaSimple extends Tarea {
+    public TareaSimple(String descripcion) {
+        super(descripcion);
+    }
+
+    @Override
+    public void mostrar() {
+        System.out.println("[Simple] " + descripcion + " - " + (completada ? "Completada" : "Pendiente"));
+    }
+}
+
+class TareaConFecha extends Tarea {
+    private Date fechaLimite;
+
+    public TareaConFecha(String descripcion, Date fechaLimite) {
+        super(descripcion);
+        this.fechaLimite = fechaLimite;
+    }
+
+    @Override
+    public void mostrar() {
+        System.out.println("[Con Fecha] " + descripcion + " (Limite: " + fechaLimite + ") - " + (completada ? "Completada" : "Pendiente"));
+    }
+}
+
+public class App {
+    private static List<Tarea> tareas = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        boolean salir = false;
+        while (!salir) {
+            System.out.println("\n1. Agregar tarea simple");
+            System.out.println("2. Agregar tarea con fecha");
+            System.out.println("3. Listar tareas");
+            System.out.println("4. Completar tarea");
+            System.out.println("5. Salir");
+            System.out.print("Elige una opción: ");
+            int opcion = Integer.parseInt(scanner.nextLine());
+
+            switch (opcion) {
+                case 1:
+                    agregarTareaSimple();
+                    break;
+                case 2:
+                    agregarTareaConFecha();
+                    break;
+                case 3:
+                    listarTareas();
+                    break;
+                case 4:
+                    completarTarea();
+                    break;
+                case 5:
+                    salir = true;
+                    break;
+                default:
+                    System.out.println("Opción inválida.");
+            }
+        }
+        System.out.println("¡Hasta luego!");
+    }
+
+    private static void agregarTareaSimple() {
+        System.out.print("Descripción: ");
+        String desc = scanner.nextLine();
+        tareas.add(new TareaSimple(desc));
+    }
+
+    private static void agregarTareaConFecha() {
+        try {
+            System.out.print("Descripción: ");
+            String desc = scanner.nextLine();
+            System.out.print("Fecha límite (yyyy-MM-dd): ");
+            String fechaStr = scanner.nextLine();
+            Date fecha = new GregorianCalendar(
+                Integer.parseInt(fechaStr.substring(0, 4)),
+                Integer.parseInt(fechaStr.substring(5, 7)) - 1,
+                Integer.parseInt(fechaStr.substring(8, 10))
+            ).getTime();
+            tareas.add(new TareaConFecha(desc, fecha));
+        } catch (Exception e) {
+            System.out.println("Fecha inválida.");
+        }
+    }
+
+    private static void listarTareas() {
+        if (tareas.isEmpty()) {
+            System.out.println("No hay tareas.");
+            return;
+        }
+        for (int i = 0; i < tareas.size(); i++) {
+            System.out.print((i + 1) + ". ");
+            tareas.get(i).mostrar();
+        }
+    }
+
+    private static void completarTarea() {
+        listarTareas();
+        if (tareas.isEmpty()) return;
+        System.out.print("Número de tarea a completar: ");
+        int idx = Integer.parseInt(scanner.nextLine()) - 1;
+        if (idx >= 0 && idx < tareas.size()) {
+            tareas.get(idx).completar();
+            System.out.println("Tarea completada.");
+        } else {
+            System.out.println("Índice inválido.");
+        }
+    }
+}

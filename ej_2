@@ -1,0 +1,142 @@
+import java.util.Scanner;
+
+class Fraccion {
+    int numerador;
+    int denominador;
+    Scanner sc = new Scanner(System.in);
+
+    void leerDatos(String mensaje) {
+        System.out.print("Ingrese el numerador de " + mensaje + ": ");
+        this.numerador = sc.nextInt();
+        System.out.print("Ingrese el denominador de " + mensaje + ": ");
+        this.denominador = sc.nextInt();
+        if (denominador == 0) {
+            denominador = 1;
+        }
+        System.out.println("La fracción es: " + numerador + "/" + denominador);
+    }
+
+  
+    void simplificar() {
+        int mcd = mcd(Math.abs(numerador), Math.abs(denominador));
+        numerador /= mcd;
+        denominador /= mcd;
+        if (denominador < 0) { // Mantener denominador positivo
+            numerador *= -1;
+            denominador *= -1;
+        }
+    }
+
+  
+    int mcd(int a, int b) {
+        while (b != 0) {
+            int t = b;
+            b = a % b;
+            a = t;
+        }
+        return a;
+    }
+
+  
+    static int mcm(int a, int b) {
+        int mcd = new Fraccion().mcd(a, b);
+        return Math.abs(a * b) / mcd;
+    }
+
+  
+    static Fraccion sumar(Fraccion f1, Fraccion f2) {
+        int mcm = mcm(f1.denominador, f2.denominador);
+        int num = f1.numerador * (mcm / f1.denominador) + f2.numerador * (mcm / f2.denominador);
+        Fraccion resultado = new Fraccion();
+        resultado.numerador = num;
+        resultado.denominador = mcm;
+        resultado.simplificar();
+        return resultado;
+    }
+
+    
+    static Fraccion restar(Fraccion f1, Fraccion f2) {
+        int mcm = mcm(f1.denominador, f2.denominador);
+        int num = f1.numerador * (mcm / f1.denominador) - f2.numerador * (mcm / f2.denominador);
+        Fraccion resultado = new Fraccion();
+        resultado.numerador = num;
+        resultado.denominador = mcm;
+        resultado.simplificar();
+        return resultado;
+    }
+
+    
+    static Fraccion multiplicar(Fraccion f1, Fraccion f2) {
+        Fraccion resultado = new Fraccion();
+        resultado.numerador = f1.numerador * f2.numerador;
+        resultado.denominador = f1.denominador * f2.denominador;
+        resultado.simplificar();
+        return resultado;
+    }
+
+    static Fraccion dividir(Fraccion f1, Fraccion f2) {
+        Fraccion resultado = new Fraccion();
+        resultado.numerador = f1.numerador * f2.denominador;
+        resultado.denominador = f1.denominador * f2.numerador;
+        resultado.simplificar();
+        return resultado;
+    }
+
+   
+    static int comparar(Fraccion f1, Fraccion f2) {
+        int mcm = mcm(f1.denominador, f2.denominador);
+        int n1 = f1.numerador * (mcm / f1.denominador);
+        int n2 = f2.numerador * (mcm / f2.denominador);
+        return Integer.compare(n1, n2);
+    }
+
+    @Override
+    public String toString() {
+        return numerador + "/" + denominador;
+    }
+}
+
+public class ej2 {
+    public static void main(String[] args) {
+        System.out.println("Selecciona función:\n1. Sumar\n2. Restar\n3. Multiplicar\n4. Dividir\n5. Comparar");
+        Scanner sc = new Scanner(System.in);
+        int opcion = sc.nextInt();
+        Fraccion f1 = new Fraccion();
+        Fraccion f2 = new Fraccion();
+        f1.leerDatos("la primera fracción");
+        f2.leerDatos("la segunda fracción");
+
+        switch (opcion) {
+            case 1:
+                Fraccion suma = Fraccion.sumar(f1, f2);
+                System.out.println("La suma es: " + suma);
+                break;
+            case 2:
+                Fraccion resta = Fraccion.restar(f1, f2);
+                System.out.println("La resta es: " + resta);
+                break;
+            case 3:
+                Fraccion mult = Fraccion.multiplicar(f1, f2);
+                System.out.println("La multiplicación es: " + mult);
+                break;
+            case 4:
+                Fraccion div = Fraccion.dividir(f1, f2);
+                System.out.println("La división es: " + div);
+                break;
+            case 5:
+                int cmp = Fraccion.comparar(f1, f2);
+                if (cmp > 0) {
+                    System.out.println("La primera fracción es mayor.");
+                } else if (cmp < 0) {
+                    System.out.println("La segunda fracción es mayor.");
+                } else {
+                    System.out.println("Las fracciones son iguales.");
+                }
+                break;
+            default:
+                System.out.println("Escribe bien hijito.");
+        }
+    }
+}
+
+
